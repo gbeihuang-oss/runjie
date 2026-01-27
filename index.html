@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | 作品集</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&display=swap');
+        body { margin: 0; background: #0a0a0a; color: #ffffff; font-family: "Crimson Pro", "Noto Serif SC", serif; overflow-x: hidden; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fade-in-up { animation: fadeInUp 1s ease-out; }
+        .section-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .section-card:hover { transform: translateY(-8px); background: rgba(255, 87, 34, 0.05) !important; border-color: #FF5722 !important; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ==========================================
+        // CONFIG: 在这里修改你的所有内容
+        // ==========================================
+        const CONFIG = {
+            zh: {
+                name: "张三",
+                sections: [
+                    { id: 'cv', title: 'CV简历', content: '这是我的简历内容，你可以直接在这里修改文字。' },
+                    { id: 'slides', title: '幻灯片作品', content: '展示你的 PPT 或 Keynote 作品描述。' },
+                    { id: 'research', title: '调研作品', content: '关于行业调研或学术研究的项目详情。' },
+                    { id: 'webdesign', title: '网页设计作品', content: 'UI/UX 设计案例展示。' }
+                ],
+                footer: { privacy: '隐私政策', terms: '使用条款', copyright: '© 2026 版权所有' }
+            },
+            en: {
+                name: "Zhang San",
+                sections: [
+                    { id: 'cv', title: 'CV Resume', content: 'This is my resume content. Edit directly in the code.' },
+                    { id: 'slides', title: 'Slide Works', content: 'Descriptions of your presentations.' },
+                    { id: 'research', title: 'Research Works', content: 'Details about your research projects.' },
+                    { id: 'webdesign', title: 'Web Design Works', content: 'Showcase of your web design cases.' }
+                ],
+                footer: { privacy: 'Privacy Policy', terms: 'Terms of Service', copyright: '© 2026 All Rights Reserved' }
+            }
+        };
+
+        const { useState, useEffect } = React;
+
+        // 图标组件
+        const Icon = ({ name, size = 20 }) => {
+            useEffect(() => { lucide.createIcons(); }, []);
+            return <i data-lucide={name} style={{ width: size, height: size }}></i>;
+        };
+
+        function App() {
+            const [lang, setLang] = useState('zh');
+            const [selectedSection, setSelectedSection] = useState(null);
+            const current = CONFIG[lang];
+
+            // 详情页
+            if (selectedSection) {
+                return (
+                    <div className="fade-in-up" style={{ minHeight: '100vh', padding: '3rem 2rem' }}>
+                        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                            <button onClick={() => setSelectedSection(null)} style={{ background: 'none', border: '1px solid rgba(255,87,34,0.3)', color: '#FF5722', padding: '0.8rem 1.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '3rem' }}>
+                                <Icon name="arrow-left" /> {lang === 'zh' ? '返回' : 'Back'}
+                            </button>
+                            <h1 style={{ fontSize: '3.5rem', color: '#FF5722', marginBottom: '1rem' }}>{selectedSection.title}</h1>
+                            <div style={{ width: '100px', height: '3px', background: '#FF5722', marginBottom: '3rem' }} />
+                            <p style={{ fontSize: '1.2rem', lineHeight: '1.8', opacity: 0.8, whiteSpace: 'pre-wrap' }}>{selectedSection.content}</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    {/* 导航 */}
+                    <nav style={{ position: 'fixed', top: 0, width: '100%', padding: '1.5rem 0', background: 'rgba(10,10,10,0.8)', backdropFilter: 'blur(10px)', zIndex: 100, borderBottom: '1px solid rgba(255,87,34,0.1)' }}>
+                        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', padding: '0 3rem' }}>
+                            <div style={{ color: '#FF5722', letterSpacing: '2px', cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>HOME</div>
+                            <button onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} style={{ background: 'none', border: '1px solid #FF5722', color: '#fff', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '4px' }}>
+                                {lang === 'zh' ? 'English' : '中文'}
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* 首屏 */}
+                    <section style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at 30% 50%, rgba(255, 87, 34, 0.08) 0%, transparent 50%)' }}>
+                        <h1 className="fade-in-up" style={{ fontSize: 'clamp(3rem, 10vw, 6rem)', color: '#FF5722', fontWeight: 300, letterSpacing: '0.1em' }}>{current.name}</h1>
+                    </section>
+
+                    {/* 作品列表 */}
+                    <section style={{ padding: '8rem 3rem', maxWidth: '1400px', margin: '0 auto' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                            {current.sections.map((item) => (
+                                <div key={item.id} onClick={() => setSelectedSection(item)} className="section-card" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,87,34,0.2)', padding: '3rem 2rem', borderRadius: '8px', cursor: 'pointer' }}>
+                                    <h2 style={{ color: '#FF5722', marginBottom: '1rem' }}>{item.title}</h2>
+                                    <div style={{ width: '40px', height: '2px', background: '#FF5722', marginBottom: '1.5rem' }} />
+                                    <p style={{ opacity: 0.6, lineHeight: '1.6' }}>{item.content.substring(0, 100)}...</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <footer style={{ padding: '4rem', textAlign: 'center', borderTop: '1px solid rgba(255,87,34,0.1)', opacity: 0.5 }}>
+                        <p>{current.footer.copyright}</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
