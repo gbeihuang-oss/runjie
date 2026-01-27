@@ -3,19 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | 作品集</title>
+    <title> Runjie's Portfolio | 黄润杰的作品集</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* 引入中文字体 */
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&display=swap');
-        body { margin: 0; background: #0a0a0a; color: #ffffff; font-family: "Crimson Pro", "Noto Serif SC", serif; overflow-x: hidden; }
+        
+        body { 
+            margin: 0; 
+            /* 宣纸感的浅米白色背景 */
+            background-color: #fdfcf8; 
+            color: #333333; 
+            font-family: "Crimson Pro", "Noto Serif SC", serif; 
+            overflow-x: hidden; 
+            position: relative;
+        }
+
+        /* 全局金色暗纹层：模拟山峦与竹影 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                /* 右下角远山暗纹 (淡金色渐变) */
+                radial-gradient(circle at 100% 100%, rgba(184, 147, 65, 0.07) 0%, transparent 45%),
+                /* 左侧模拟竹影的垂直线条感 */
+                repeating-linear-gradient(90deg, transparent, transparent 150px, rgba(184, 147, 65, 0.02) 151px, transparent 152px),
+                /* 左下角淡淡的山影 */
+                radial-gradient(circle at 0% 100%, rgba(184, 147, 65, 0.04) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .fade-in-up { animation: fadeInUp 1s ease-out; }
-        .section-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .section-card:hover { transform: translateY(-8px); background: rgba(255, 87, 34, 0.05) !important; border-color: #FF5722 !important; }
+        .fade-in-up { animation: fadeInUp 1.2s ease-out; }
+
+        /* 卡片样式优化：淡金色边框，悬停加深 */
+        .section-card { 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(184, 147, 65, 0.15) !important;
+            backdrop-filter: blur(5px);
+        }
+        .section-card:hover { 
+            transform: translateY(-10px); 
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-color: #b89341 !important; 
+            box-shadow: 0 15px 35px rgba(184, 147, 65, 0.1);
+        }
+
+        /* 隐藏滚动条但保留功能 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(184, 147, 65, 0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -23,24 +65,24 @@
 
     <script type="text/babel">
         // ==========================================
-        // CONFIG: 在这里修改内容，卡片增加{}
+        // CONFIG: 在这里修改内容，支持简单的 HTML 标签
         // ==========================================
         const CONFIG = {
             zh: {
                 name: "黄润杰",
                 sections: [
-                    { id: 'cv', title: 'CV', content: '简历内容' },
-                    { id: 'slides', title: 'Sildes', content: 'PPT作品' },
-                    { id: 'research', title: 'Research', content: '竞品调研&内容调研&网站调研' },
+                    { id: 'cv', title: 'CV', content: '简历内容详情。你可以使用 &lt;br/&gt; 来换行。' },
+                    { id: 'slides', title: 'Slides', content: 'PPT作品展示。' },
+                    { id: 'research', title: 'Research', content: '竞品调研 & 内容调研 & 网站调研' },
                 ],
                 footer: { privacy: '隐私政策', terms: '使用条款', copyright: '© 2026 版权所有' }
             },
             en: {
                 name: "Runjie Huang",
                 sections: [
-                    { id: 'cv', title: 'CV', content: 'Resume content' },
-                    { id: 'slides', title: 'Slides', content: 'Presentations' },
-                    { id: 'research', title: 'Research', content: 'Research projects' },
+                    { id: 'cv', title: 'CV', content: 'Resume content details.' },
+                    { id: 'slides', title: 'Slides', content: 'Presentation works.' },
+                    { id: 'research', title: 'Research', content: 'Competitive & Content & Website Research' },
                 ],
                 footer: { privacy: 'Privacy Policy', terms: 'Terms of Service', copyright: '© 2026 All Rights Reserved' }
             }
@@ -48,7 +90,6 @@
 
         const { useState, useEffect } = React;
 
-        // 图标组件
         const Icon = ({ name, size = 20 }) => {
             useEffect(() => { lucide.createIcons(); }, []);
             return <i data-lucide={name} style={{ width: size, height: size }}></i>;
@@ -59,17 +100,20 @@
             const [selectedSection, setSelectedSection] = useState(null);
             const current = CONFIG[lang];
 
-            // 详情页
+            // 详情页组件
             if (selectedSection) {
                 return (
-                    <div className="fade-in-up" style={{ minHeight: '100vh', padding: '3rem 2rem' }}>
-                        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-                            <button onClick={() => setSelectedSection(null)} style={{ background: 'none', border: '1px solid rgba(255,87,34,0.3)', color: '#FF5722', padding: '0.8rem 1.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '3rem' }}>
+                    <div className="fade-in-up" style={{ minHeight: '100vh', padding: '5rem 2rem' }}>
+                        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                            <button onClick={() => setSelectedSection(null)} 
+                                    style={{ background: 'none', border: '1px solid rgba(184,147,65,0.4)', color: '#b89341', padding: '0.6rem 1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4rem', transition: '0.3s' }}>
                                 <Icon name="arrow-left" /> {lang === 'zh' ? '返回' : 'Back'}
                             </button>
-                            <h1 style={{ fontSize: '3.5rem', color: '#FF5722', marginBottom: '1rem' }}>{selectedSection.title}</h1>
-                            <div style={{ width: '100px', height: '3px', background: '#FF5722', marginBottom: '3rem' }} />
-                            <p style={{ fontSize: '1.2rem', lineHeight: '1.8', opacity: 0.8, whiteSpace: 'pre-wrap' }}>{selectedSection.content}</p>
+                            <h1 style={{ fontSize: '3rem', color: '#b89341', fontWeight: 300, marginBottom: '1rem', letterSpacing: '0.1em' }}>{selectedSection.title}</h1>
+                            <div style={{ width: '60px', height: '2px', background: '#b89341', marginBottom: '3rem' }} />
+                            {/* 支持 HTML 渲染以便你可以加入图片或链接 */}
+                            <div style={{ fontSize: '1.15rem', lineHeight: '2', color: '#444', whiteSpace: 'pre-wrap' }} 
+                                 dangerouslySetInnerHTML={{ __html: selectedSection.content }} />
                         </div>
                     </div>
                 );
@@ -77,36 +121,39 @@
 
             return (
                 <div>
-                    {/* 导航 */}
-                    <nav style={{ position: 'fixed', top: 0, width: '100%', padding: '1.5rem 0', background: 'rgba(10,10,10,0.8)', backdropFilter: 'blur(10px)', zIndex: 100, borderBottom: '1px solid rgba(255,87,34,0.1)' }}>
-                        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', padding: '0 3rem' }}>
-                            <div style={{ color: '#FF5722', letterSpacing: '2px', cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>HOME</div>
-                            <button onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} style={{ background: 'none', border: '1px solid #FF5722', color: '#fff', padding: '0.5rem 1rem', cursor: 'pointer', borderRadius: '4px' }}>
+                    {/* 导航栏 */}
+                    <nav style={{ position: 'fixed', top: 0, width: '100%', padding: '1.5rem 0', background: 'rgba(253, 252, 248, 0.8)', backdropFilter: 'blur(12px)', zIndex: 100, borderBottom: '1px solid rgba(184, 147, 65, 0.15)' }}>
+                        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', padding: '0 2rem' }}>
+                            <div style={{ color: '#b89341', letterSpacing: '3px', cursor: 'pointer', fontWeight: 500 }} onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>HOME</div>
+                            <button onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} style={{ background: 'none', border: '1px solid #b89341', color: '#b89341', padding: '0.4rem 1rem', cursor: 'pointer', borderRadius: '2px', transition: '0.3s' }}>
                                 {lang === 'zh' ? 'English' : '中文'}
                             </button>
                         </div>
                     </nav>
 
-                    {/* 首屏 */}
-                    <section style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at 30% 50%, rgba(255, 87, 34, 0.08) 0%, transparent 50%)' }}>
-                        <h1 className="fade-in-up" style={{ fontSize: 'clamp(3rem, 10vw, 6rem)', color: '#FF5722', fontWeight: 300, letterSpacing: '0.1em' }}>{current.name}</h1>
+                    {/* 首屏：极简留白风格 */}
+                    <section style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                        <div className="fade-in-up" style={{ textAlign: 'center' }}>
+                            <h1 style={{ fontSize: 'clamp(3rem, 12vw, 5.5rem)', color: '#b89341', fontWeight: 300, letterSpacing: '0.4em', margin: 0 }}>{current.name}</h1>
+                            <div style={{ marginTop: '1.5rem', height: '1px', width: '100px', background: 'linear-gradient(to right, transparent, #b89341, transparent)', margin: '1.5rem auto' }} />
+                        </div>
                     </section>
 
                     {/* 作品列表 */}
-                    <section style={{ padding: '8rem 3rem', maxWidth: '1400px', margin: '0 auto' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                    <section style={{ padding: '4rem 2rem 8rem', maxWidth: '1100px', margin: '0 auto' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem' }}>
                             {current.sections.map((item) => (
-                                <div key={item.id} onClick={() => setSelectedSection(item)} className="section-card" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,87,34,0.2)', padding: '3rem 2rem', borderRadius: '8px', cursor: 'pointer' }}>
-                                    <h2 style={{ color: '#FF5722', marginBottom: '1rem' }}>{item.title}</h2>
-                                    <div style={{ width: '40px', height: '2px', background: '#FF5722', marginBottom: '1.5rem' }} />
-                                    <p style={{ opacity: 0.6, lineHeight: '1.6' }}>{item.content.substring(0, 100)}...</p>
+                                <div key={item.id} onClick={() => setSelectedSection(item)} className="section-card" style={{ padding: '3.5rem 2rem', borderRadius: '4px', cursor: 'pointer', textAlign: 'center' }}>
+                                    <h2 style={{ color: '#b89341', fontWeight: 400, fontSize: '1.6rem', marginBottom: '1.2rem', letterSpacing: '0.1em' }}>{item.title}</h2>
+                                    <div style={{ width: '30px', height: '1px', background: '#b89341', margin: '0 auto 1.5rem', opacity: 0.5 }} />
+                                    <p style={{ color: '#666', fontSize: '0.95rem', lineHeight: '1.6' }}>{item.content.substring(0, 40)}...</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    <footer style={{ padding: '4rem', textAlign: 'center', borderTop: '1px solid rgba(255,87,34,0.1)', opacity: 0.5 }}>
-                        <p>{current.footer.copyright}</p>
+                    <footer style={{ padding: '4rem', textAlign: 'center', borderTop: '1px solid rgba(184, 147, 65, 0.1)', background: 'rgba(184, 147, 65, 0.02)' }}>
+                        <p style={{ opacity: 0.6, fontSize: '0.85rem', letterSpacing: '1px', color: '#b89341' }}>{current.footer.copyright}</p>
                     </footer>
                 </div>
             );
